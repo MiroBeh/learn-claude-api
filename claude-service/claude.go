@@ -62,3 +62,21 @@ func CallClaudeApi(role anthropic.MessageParamRole, content string) (string, err
 
 	return message.Content[0].Text, nil
 }
+
+func CallClaudeApiWithHistory(messages []anthropic.MessageParam) (string, error) {
+	client, err := getAnthropicClient()
+	if err != nil {
+		return "", err
+	}
+
+	message, err := client.Messages.New(context.TODO(), anthropic.MessageNewParams{
+		MaxTokens: 1024,
+		Messages:  messages,
+		Model:     anthropic.ModelClaudeHaiku4_5,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return message.Content[0].Text, nil
+}

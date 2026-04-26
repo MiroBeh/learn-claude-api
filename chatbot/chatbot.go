@@ -11,16 +11,25 @@ import (
 )
 
 func main() {
-	fmt.Print("Enter your question: ")
-	question := getTextInput()
+	fmt.Print("Hello I am your bot, ask me anything: ")
 
-	response, err := claudeApi.CallClaudeApi(anthropic.MessageParamRoleUser, question)
+	var messages []anthropic.MessageParam
 
-	if err != nil {
-		panic(err)
+	for {
+		userInput := getTextInput()
+		messages = append(messages, anthropic.MessageParam{Role: anthropic.MessageParamRoleUser, Content: []anthropic.ContentBlockParamUnion{anthropic.NewTextBlock(userInput)}})
+
+		response, err := claudeApi.CallClaudeApiWithHistory(messages)
+
+		messages = append(messages, anthropic.MessageParam{Role: anthropic.MessageParamRoleAssistant, Content: []anthropic.ContentBlockParamUnion{anthropic.NewTextBlock(response)}})
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("%s\n", response)
 	}
 
-	fmt.Print(response)
 }
 
 func getTextInput() string {
